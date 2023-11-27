@@ -8,7 +8,7 @@ import { CorpInterface } from "@/types";
 import useSWR from "swr";
 import { Spinner } from "@nextui-org/react";
 
-export default function add() {
+export default function AddCorp() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [corps, setCorps] = useState<CorpInterface[] | undefined>(undefined);
 

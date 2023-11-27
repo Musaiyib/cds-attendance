@@ -8,7 +8,7 @@ import useSWR from "swr";
 import { Spinner } from "@nextui-org/react";
 import { cdsGroupInterface } from "@/types";
 
-export default function add() {
+export default function CDSPage() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const { data, isLoading, error } = useSWR("/dashboard/add", getCdsGroups);

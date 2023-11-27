@@ -8,7 +8,7 @@ import useSWR from "swr";
 import { Spinner } from "@nextui-org/react";
 import toast from "react-hot-toast";
 
-export default function add() {
+export default function MarkAttendance() {
   const [corps, setCorps] = useState<CorpInterface[] | undefined>(undefined);
   const {
     data: fetchedCorps,

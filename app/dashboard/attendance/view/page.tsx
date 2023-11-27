@@ -6,7 +6,7 @@ import { useEffect, useState, useTransition } from "react";
 import { fetchCorps } from "@/actions/action";
 import { CorpInterface } from "@/types";
 
-export default function add() {
+export default function ViewCorp() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [corps, setCorps] = useState<CorpInterface[]>([]);
 
