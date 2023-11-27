@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Corp {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  fullName   String
+  stateCode  String     @unique
+  cdsGroupId String     @db.ObjectId
+  cdsGroup   cdsGroup   @relation("corpId", fields: [cdsGroupId], references: [id])
+  ppa        String
+  state      String
+  university String
+  course     String
+  phone      String
+  attendance Attendance
+  legacyFee  Boolean?   @default(false)
+  weeklyDues Int?       @default(0)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("corps")
+}
+
+model cdsGroup {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String   @unique
+  amountPaid Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  corps      Corp[]   @relation("corpId")
+
+  @@map("cdsGroups")
+}
+
+type Attendance {
+  week1 Boolean @default(false)
+  week2 Boolean @default(false)
+  week3 Boolean @default(false)
+  week4 Boolean @default(false)
+}
