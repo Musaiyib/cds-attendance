@@ -46,7 +46,8 @@ export default function CDSPage() {
                 {Array.isArray(data) &&
                   data.map(
                     (cdsGroup: cdsGroupInterface, groupIndex: number) => (
-                      <div
+                      <Link
+                        href={`/dashboard/cds/${cdsGroup.id}`}
                         key={groupIndex}
                         className="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 hover:scale-[1.02]"
                       >
@@ -65,9 +66,7 @@ export default function CDSPage() {
                           <span className="text-sm">14 days ago</span>
                         </div>
                         <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                          <a href={`/dashboard/cds/${cdsGroup.id}`}>
-                            {cdsGroup.name}
-                          </a>
+                          <h2>{cdsGroup.name}</h2>
                         </h2>
 
                         <p className="my-1 text-lg">
@@ -98,7 +97,7 @@ export default function CDSPage() {
                             </p>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     )
                   )}
               </div>

@@ -29,6 +29,10 @@ export default function SingleCdsGroup({
     return (attendedWeeks / Object.keys(attendance).length) * 100;
   };
 
+  if (error) {
+    toast.error(error.message);
+  }
+
   return (
     <section className="w-full h-full flex flex-row px-2 pt-2 ">
       <div className="flex-auto bg-gray-800 rounded-t-lg mt-2 light:bg-gray-50">
@@ -47,9 +51,11 @@ export default function SingleCdsGroup({
                   <p className="justify-center align-center flex text-md">
                     Total corp members:
                     <span className="ml-2 font-bold">
-                      {data && "corps" in data && data.corps
-                        ? data.corps.length
-                        : "Loading..."}
+                      {data && "corps" in data && data.corps ? (
+                        data.corps.length
+                      ) : (
+                        <Spinner />
+                      )}
                     </span>
                   </p>
                 </div>

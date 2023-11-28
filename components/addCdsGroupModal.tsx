@@ -3,9 +3,8 @@
 import React from "react";
 import { Spinner } from "@nextui-org/react";
 import { addCDS } from "@/actions/action";
-import { useFormState, useFormStatus } from "react-dom";
-import useSWR from "swr";
-import { cdsGroupInterface } from "@/types";
+import { useFormState } from "react-dom";
+import toast from "react-hot-toast";
 
 interface AddCdsGroupFormProps {
   modalStatus: boolean;
@@ -21,6 +20,13 @@ export const AddCdsGroupForm: React.FC<AddCdsGroupFormProps> = ({
     success: false,
   });
   let pending = false;
+
+  if (state?.success) {
+    toast.success(state.message);
+    onOpenChange();
+  } else if (state && state?.message !== "") {
+    toast.error(state?.message);
+  }
 
   return (
     <div
