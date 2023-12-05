@@ -40,7 +40,7 @@ export default function SingleCdsGroup({
     if (isLoading) {
       toast.loading(
         <>
-          <Spinner /> "Loading..."
+          <Spinner /> Loading...
         </>
       );
     } else if (res.code === 200) {
