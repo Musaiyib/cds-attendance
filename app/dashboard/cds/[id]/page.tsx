@@ -1,23 +1,17 @@
 "use client";
-import Link from "next/link";
-import { LuPlus } from "react-icons/lu";
-import { useEffect, useState } from "react";
-import {
-  fetchCorps,
-  getSingleCdsGroup,
-  updateAttendance,
-} from "@/actions/action";
+import { MouseEventHandler } from "react";
+import { getSingleCdsGroup, updateLegacyFee } from "@/actions/action";
 import { CorpInterface, cdsGroupInterface } from "@/types";
 import useSWR from "swr";
 import { Spinner } from "@nextui-org/react";
 import toast from "react-hot-toast";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 export default function SingleCdsGroup({
   params: { id },
 }: {
   params: { id: string };
 }) {
-  const [corps, setCorps] = useState<CorpInterface[] | undefined>(undefined);
   const { data, isLoading, error } = useSWR<
     cdsGroupInterface | { message: string; code: number }
   >("/dashboard/attendance/mark", () => getSingleCdsGroup(id));
@@ -33,8 +27,31 @@ export default function SingleCdsGroup({
     toast.error(error.message);
   }
 
+  const handleLegacyFee = async (id: string) => {
+    if (!id) return;
+
+    let isLoading = true;
+
+    const res = await updateLegacyFee(id).then((res) => {
+      isLoading = false;
+      return res;
+    });
+
+    if (isLoading) {
+      toast.loading(
+        <>
+          <Spinner /> "Loading..."
+        </>
+      );
+    } else if (res.code === 200) {
+      toast.success(res.message);
+    } else if (res.code === 400) {
+      toast.error(res.message);
+    }
+  };
+
   return (
-    <section className="w-full h-full flex flex-row px-2 pt-2 ">
+    <section className="w-full h-full flex flex-row lg:px-2">
       <div className="flex-auto bg-gray-800 rounded-t-lg mt-2 light:bg-gray-50">
         <div className="h-full w-full">
           <div className="bg-white dark:bg-gray-800 h-full relative shadow-md sm:rounded-lg overflow-hidden overflow-y-scroll text-start mx-2">
@@ -297,8 +314,21 @@ export default function SingleCdsGroup({
                               <td className="px-4 py-3">
                                 {`${calculateAttendance(corp.attendance)}%`}
                               </td>
-                              <td className="px-4 py-3">
-                                {corp.legacyFee ? "Paid" : "Not paid"}
+                              <td className="px-4 py-3 ">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    corp.legacyFee !== true
+                                      ? handleLegacyFee(corp.id)
+                                      : toast("Legacy fee is already paid", {
+                                          icon: (
+                                            <IoMdInformationCircleOutline className="scale-125 text-blue-600" />
+                                          ),
+                                        });
+                                  }}
+                                >
+                                  {corp.legacyFee ? "Paid" : "Not paid"}
+                                </button>
                               </td>
                               <td className="px-4 py-3 flex items-center justify-end">
                                 <button

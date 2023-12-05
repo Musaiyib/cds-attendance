@@ -134,7 +134,7 @@ export const updateAttendance = async (
     }
 }
 
-export const updateLegacyFee = async (user: string) => {
+export const updateLegacyFee = async (user: string): Promise<{ message: string, code: number }> => {
     try {
         await prisma.corp.update({
             where: {
@@ -144,9 +144,9 @@ export const updateLegacyFee = async (user: string) => {
                 legacyFee: true
             }
         })
-        return "Legacy fee updated"
+        return { message: "Legacy fee updated", code: 200 }
     } catch (error) {
         console.error(error)
-        return "Failed to update legacy fee"
+        return { message: "Failed to update legacy fee", code: 400 }
     }
 }

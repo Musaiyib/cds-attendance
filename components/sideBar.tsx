@@ -8,7 +8,7 @@ import { RxDashboard } from "react-icons/rx";
 
 const SideBar = () => {
   return (
-    <section className="min-w-max bg-gray-800 h-full">
+    <section className="min-w-max bg-gray-800 h-full hidden lg:flex">
       <div className="w-[280px] h-full flex flex-col items-left relative">
         <div className="flex flex-col justify-center items-center mt-14 mb-10">
           <div className="w-16 h-16 rounded-full bg-slate-600 mb-4 mt-4"></div>

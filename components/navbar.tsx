@@ -1,144 +1,105 @@
-import {
-	Navbar as NextUINavbar,
-	NavbarContent,
-	NavbarMenu,
-	NavbarMenuToggle,
-	NavbarBrand,
-	NavbarItem,
-	NavbarMenuItem,
-} from "@nextui-org/navbar";
-import { Button } from "@nextui-org/button";
-import { Kbd } from "@nextui-org/kbd";
-import { Link } from "@nextui-org/link";
-import { Input } from "@nextui-org/input";
+"use client";
+import Link from "next/link";
+import React, { useState } from "react";
+import { CgLogOut } from "react-icons/cg";
+import { CiMenuBurger, CiViewList } from "react-icons/ci";
+import { IoCheckmarkDone } from "react-icons/io5";
+import { MdClose, MdPersonAddAlt } from "react-icons/md";
+import { RxDashboard } from "react-icons/rx";
+import { TbHomeCheck } from "react-icons/tb";
 
-import { link as linkStyles } from "@nextui-org/theme";
+const Navbar = () => {
+  const [closeNav, setCloseNav] = useState<boolean>(true);
 
-import { siteConfig } from "@/config/site";
-import NextLink from "next/link";
-import clsx from "clsx";
-
-import { ThemeSwitch } from "@/components/theme-switch";
-import {
-	TwitterIcon,
-	GithubIcon,
-	DiscordIcon,
-	HeartFilledIcon,
-	SearchIcon,
-} from "@/components/icons";
-
-import { Logo } from "@/components/icons";
-
-export const Navbar = () => {
-	const searchInput = (
-		<Input
-			aria-label="Search"
-			classNames={{
-				inputWrapper: "bg-default-100",
-				input: "text-sm",
-			}}
-			endContent={
-				<Kbd className="hidden lg:inline-block" keys={["command"]}>
-					K
-				</Kbd>
-			}
-			labelPlacement="outside"
-			placeholder="Search..."
-			startContent={
-				<SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-			}
-			type="search"
-		/>
-	);
-
-	return (
-		<NextUINavbar maxWidth="xl" position="sticky">
-			<NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-				<NavbarBrand as="li" className="gap-3 max-w-fit">
-					<NextLink className="flex justify-start items-center gap-1" href="/">
-						<Logo />
-						<p className="font-bold text-inherit">ACME</p>
-					</NextLink>
-				</NavbarBrand>
-				<ul className="hidden lg:flex gap-4 justify-start ml-2">
-					{siteConfig.navItems.map((item) => (
-						<NavbarItem key={item.href}>
-							<NextLink
-								className={clsx(
-									linkStyles({ color: "foreground" }),
-									"data-[active=true]:text-primary data-[active=true]:font-medium"
-								)}
-								color="foreground"
-								href={item.href}
-							>
-								{item.label}
-							</NextLink>
-						</NavbarItem>
-					))}
-				</ul>
-			</NavbarContent>
-
-			<NavbarContent
-				className="hidden sm:flex basis-1/5 sm:basis-full"
-				justify="end"
-			>
-				<NavbarItem className="hidden sm:flex gap-2">
-					<Link isExternal href={siteConfig.links.twitter} aria-label="Twitter">
-						<TwitterIcon className="text-default-500" />
-					</Link>
-					<Link isExternal href={siteConfig.links.discord} aria-label="Discord">
-						<DiscordIcon className="text-default-500" />
-					</Link>
-					<Link isExternal href={siteConfig.links.github} aria-label="Github">
-						<GithubIcon className="text-default-500" />
-					</Link>
-					<ThemeSwitch />
-				</NavbarItem>
-				<NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
-				<NavbarItem className="hidden md:flex">
-					<Button
-            isExternal
-						as={Link}
-						className="text-sm font-normal text-default-600 bg-default-100"
-						href={siteConfig.links.sponsor}
-						startContent={<HeartFilledIcon className="text-danger" />}
-						variant="flat"
-					>
-						Sponsor
-					</Button>
-				</NavbarItem>
-			</NavbarContent>
-
-			<NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-				<Link isExternal href={siteConfig.links.github} aria-label="Github">
-					<GithubIcon className="text-default-500" />
-				</Link>
-				<ThemeSwitch />
-				<NavbarMenuToggle />
-			</NavbarContent>
-
-			<NavbarMenu>
-				{searchInput}
-				<div className="mx-4 mt-2 flex flex-col gap-2">
-					{siteConfig.navMenuItems.map((item, index) => (
-						<NavbarMenuItem key={`${item}-${index}`}>
-							<Link
-								color={
-									index === 2
-										? "primary"
-										: index === siteConfig.navMenuItems.length - 1
-										? "danger"
-										: "foreground"
-								}
-								href="#"
-								size="lg"
-							>
-								{item.label}
-							</Link>
-						</NavbarMenuItem>
-					))}
-				</div>
-			</NavbarMenu>
-		</NextUINavbar>
-	);
+  const handleClose = () => {
+    setCloseNav(!closeNav);
+  };
+  return (
+    <nav className="flex flex-wrap w-full justify-between items-center px-10 py3 bg-gray-800 h-14 lg:hidden">
+      <div className="w-1/2 flex justify-start">Logo</div>
+      <div className="w-1/2 flex justify-end">
+        <CiMenuBurger
+          onClick={handleClose}
+          className={`scale-150 ${closeNav ? "block" : "hidden"}`}
+        />
+      </div>
+      {!closeNav && (
+        <div className="flex flex-col absolute w-full h-full bg-gray-950 opacity-90 top-0 bottom-0 left-0 right-0 z-50">
+          <div className="w-full h-14 pl-10 pr-8 py-3 flex justify-end items-center">
+            <div className="bg-gray-700 rounded-lg">
+              <MdClose className="scale-150 m-2" onClick={handleClose} />
+            </div>
+          </div>
+          {/* links */}
+          <div className="w-full h-full flex flex-col justify-center items-center">
+            <ul className="w-full flex flex-col justify-center items-center">
+              <li className="h-10 bg-slate-500 flex items-center justify-center my-2 w-56 rounded-3xl hover:bg-gray-700">
+                <Link
+                  onClick={handleClose}
+                  href="/dashboard"
+                  className="flex flex-row items-center justify-center w-full h-full"
+                >
+                  <RxDashboard className="text-[20px] mr-2" />
+                  Dashboard
+                </Link>
+              </li>
+              <li className="h-10 flex items-center justify-center my-2 w-56 rounded-3xl hover:bg-gray-700">
+                <Link
+                  onClick={handleClose}
+                  href="/dashboard/cds"
+                  className="flex flex-row items-center justify-center w-full h-full"
+                >
+                  <TbHomeCheck className="text-[20px] mr-2" />
+                  CDS Groups
+                </Link>
+              </li>
+              <li className="h-10  flex items-center justify-center my-2 w-56 rounded-3xl hover:bg-gray-700">
+                <Link
+                  onClick={handleClose}
+                  href="/dashboard/attendance/mark"
+                  className="flex flex-row items-center justify-center w-full h-full"
+                >
+                  <IoCheckmarkDone className="text-[20px] mr-2" />
+                  Mark Attendance
+                </Link>
+              </li>
+              <li className="h-10  flex items-center justify-center my-2 w-56 rounded-3xl hover:bg-gray-700">
+                <Link
+                  onClick={handleClose}
+                  href="/dashboard/attendance/view"
+                  className="flex flex-row items-center justify-center w-full h-full"
+                >
+                  <CiViewList className="text-[20px] mr-2" />
+                  View Attendance
+                </Link>
+              </li>
+              <li className="h-10  flex items-center justify-center my-2 w-56 rounded-3xl hover:bg-gray-700">
+                <Link
+                  onClick={handleClose}
+                  href="/dashboard/add"
+                  className="flex flex-row items-center justify-center w-full h-full"
+                >
+                  <MdPersonAddAlt className="text-[20px] mr-2" />
+                  Add Corp Member
+                </Link>
+              </li>
+            </ul>
+            <ul className="absolute bottom-5 w-full">
+              <li className="h-10  flex items-center justify-center my-1 rounded-r-3xl hover:bg-gray-700">
+                <Link
+                  onClick={handleClose}
+                  href="/logout"
+                  className="flex flex-row items-center justify-center w-full h-full"
+                >
+                  <CgLogOut className="text-[20px] mr-2" /> Logout
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
 };
+
+export default Navbar;

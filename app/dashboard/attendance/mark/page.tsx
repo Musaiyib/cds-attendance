@@ -42,7 +42,7 @@ export default function MarkAttendance() {
   };
 
   return (
-    <section className="w-full h-full flex flex-row px-2 pt-2 ">
+    <section className="w-full h-full flex flex-row lg:px-2">
       <div className="flex-auto bg-gray-800 rounded-t-lg mt-2 light:bg-gray-50">
         <div className="h-full w-full">
           <div className="bg-white dark:bg-gray-800 h-full relative shadow-md sm:rounded-lg overflow-hidden overflow-y-scroll text-start mx-2">

@@ -18,7 +18,7 @@ export default function CDSPage() {
   };
 
   return (
-    <section className="w-full h-full flex flex-row px-2 pt-2 ">
+    <section className="w-full h-full flex flex-row lg:px-2">
       <div className="flex-auto bg-gray-800 rounded-t-lg mt-2 light:bg-gray-50">
         {isModalOpen && (
           <AddCdsGroupForm
