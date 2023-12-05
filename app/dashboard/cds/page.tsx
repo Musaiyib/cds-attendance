@@ -42,7 +42,7 @@ export default function CDSPage() {
               </button>
             </div>
             <div className="py-8 px-4 lg:py-16 lg:px-6">
-              <div className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
                 {Array.isArray(data) &&
                   data.map(
                     (cdsGroup: cdsGroupInterface, groupIndex: number) => (
