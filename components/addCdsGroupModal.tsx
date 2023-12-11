@@ -35,7 +35,7 @@ export const AddCdsGroupForm: React.FC<AddCdsGroupFormProps> = ({
     onClose();
     handleModal();
     setCdsGroupName("");
-  }, []);
+  }, [handleModal, onClose]);
   useEffect(() => {
     modalStatus ? onOpen() : handleCloseModal();
   }, [modalStatus, handleCloseModal, onOpen]);
