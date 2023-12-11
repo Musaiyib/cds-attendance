@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -50,7 +50,7 @@ export const AddCorpMemberForm: React.FC<AddCorpMemberFormProps> = ({
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     onClose();
     handleModal();
     setNewCorpData({
@@ -75,7 +75,7 @@ export const AddCorpMemberForm: React.FC<AddCorpMemberFormProps> = ({
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-  };
+  }, []);
   useEffect(() => {
     modalStatus ? onOpen() : handleCloseModal();
   }, [modalStatus, handleCloseModal, onOpen]);

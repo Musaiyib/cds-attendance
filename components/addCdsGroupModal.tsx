@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -31,11 +31,11 @@ export const AddCdsGroupForm: React.FC<AddCdsGroupFormProps> = ({
   );
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     onClose();
     handleModal();
     setCdsGroupName("");
-  };
+  }, []);
   useEffect(() => {
     modalStatus ? onOpen() : handleCloseModal();
   }, [modalStatus, handleCloseModal, onOpen]);
