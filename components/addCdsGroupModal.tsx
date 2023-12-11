@@ -38,7 +38,7 @@ export const AddCdsGroupForm: React.FC<AddCdsGroupFormProps> = ({
   };
   useEffect(() => {
     modalStatus ? onOpen() : handleCloseModal();
-  }, [modalStatus]);
+  }, [modalStatus, handleCloseModal, onOpen]);
 
   const handleAddCdsGroup = async () => {
     const isEmpty = (value: any) =>

@@ -78,7 +78,7 @@ export const AddCorpMemberForm: React.FC<AddCorpMemberFormProps> = ({
   };
   useEffect(() => {
     modalStatus ? onOpen() : handleCloseModal();
-  }, [modalStatus]);
+  }, [modalStatus, handleCloseModal, onOpen]);
 
   const handleAddCorp = async () => {
     const {
