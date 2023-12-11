@@ -1,5 +1,6 @@
 import Navbar from "@/components/navbar";
 import SideBar from "@/components/sideBar";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function DashboardLayout({
   children,
