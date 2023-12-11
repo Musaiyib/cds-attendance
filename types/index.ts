@@ -17,8 +17,8 @@ export interface CorpInterface {
   course: string;
   phone: string;
   attendance: { week1: boolean, week2: boolean, week3: boolean, week4: boolean }
-  legacyFee: boolean | null; // Adjust the type to allow null values
-  weeklyDues: number | null;
+  legacyFee: boolean; // Adjust the type to allow null values
+  weeklyDues: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,6 +28,7 @@ export interface cdsGroupInterface {
   name: string;
   corps: CorpInterface[] | corpObject[];
   amountPaid: number;
+  legacyFee: number;
   createdAt: Date;
   updatedAt: Date;
 }

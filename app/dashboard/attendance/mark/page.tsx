@@ -320,7 +320,14 @@ export default function MarkAttendance() {
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          {corp.legacyFee ? "Paid" : "Not paid"}
+                          <p
+                            className={`${
+                              corp.legacyFee ? "text-green-700" : "text-red-700"
+                            } text-left p-2 rounded-lg w-20`}
+                            onClick={() => {}}
+                          >
+                            {corp.legacyFee ? "Paid" : "Not paid"}
+                          </p>
                         </td>
                         <td className="px-4 py-3 flex items-center justify-end">
                           <button

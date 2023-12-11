@@ -2,21 +2,26 @@
 import Link from "next/link";
 import { LuPlus } from "react-icons/lu";
 import { AddCorpMemberForm } from "@/components/addMemberModal";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { fetchCorps } from "@/actions/action";
 import { CorpInterface } from "@/types";
 import useSWR from "swr";
 import { Spinner } from "@nextui-org/react";
+import SingleCorpCard from "./components/singleCorpCard";
 
 export default function AddCorp() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [corps, setCorps] = useState<CorpInterface[] | undefined>(undefined);
+  const [corps, setCorps] = useState<CorpInterface[] | undefined>([]);
 
   const {
     data: fetchedCorps,
     isLoading,
     error,
-  } = useSWR<CorpInterface[]>("/dashboard/attendance/mark", fetchCorps);
+  } = useSWR<CorpInterface[]>("/dashboard/attendance/mark", fetchCorps, {
+    revalidateIfStale: true,
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+  });
 
   useEffect(() => {
     if (fetchedCorps) {
@@ -25,38 +30,31 @@ export default function AddCorp() {
   }, [fetchedCorps]);
 
   const handleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
-  const calculateAttendance = (attendance: Record<string, boolean>): number => {
-    const attendedWeeks = Object.values(attendance).filter(
-      (value) => value
-    ).length;
-    return (attendedWeeks / Object.keys(attendance).length) * 100;
+    setIsModalOpen(false);
   };
 
   return (
     <section className="w-full h-full flex flex-row lg:px-2">
       <div className="flex-auto bg-gray-800 rounded-t-lg mt-2 light:bg-gray-50">
-        {isModalOpen && (
-          <AddCorpMemberForm
-            modalStatus={isModalOpen}
-            handleModal={handleModal}
-          />
-        )}
+        <AddCorpMemberForm
+          modalStatus={isModalOpen}
+          handleModal={handleModal}
+        />
+
         <div className="h-full w-full">
           <div className="bg-white dark:bg-gray-800 h-full relative shadow-md sm:rounded-lg overflow-hidden overflow-y-scroll text-start mx-2">
             <div className="flex justify-between align-center py-5 px-3">
               <h1 className="justify-self-start align-top font-bold text-2xl">
                 Corp Members
               </h1>
-              <Link
-                href="dashboard/add/cds"
-                className="flex flex-row text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
               >
                 <LuPlus className="w-5 h-5 mr-2" />
-                Add CDS Group
-              </Link>
+                Add corp member
+              </button>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
               <div className="w-full md:w-1/2">
@@ -90,14 +88,6 @@ export default function AddCorp() {
                 </form>
               </div>
               <div className="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={handleModal}
-                  className="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                >
-                  <LuPlus className="w-5 h-5 mr-2" />
-                  Add corp member
-                </button>
                 <div className="flex items-center space-x-3 w-full md:w-auto">
                   <button
                     id="actionsDropdownButton"
@@ -289,75 +279,8 @@ export default function AddCorp() {
                 </thead>
                 <tbody>
                   {corps &&
-                    corps.map((corp: CorpInterface) => (
-                      <tr
-                        className="border-b dark:border-gray-700"
-                        key={corp.id}
-                      >
-                        <th
-                          scope="row"
-                          className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                        >
-                          {corp.fullName}
-                        </th>
-                        <td className="px-4 py-3">{corp.stateCode}</td>
-                        <td className="px-4 py-3">{corp.phone}</td>
-                        <td className="px-4 py-3">
-                          {`${calculateAttendance(corp.attendance)}%`}
-                        </td>
-                        <td className="px-4 py-3">{corp.ppa}</td>
-                        <td className="px-4 py-3 flex items-center justify-end">
-                          <button
-                            id="apple-imac-27-dropdown-button"
-                            data-dropdown-toggle="apple-imac-27-dropdown"
-                            className="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
-                            type="button"
-                          >
-                            <svg
-                              className="w-5 h-5"
-                              aria-hidden="true"
-                              fill="currentColor"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                            </svg>
-                          </button>
-                          <div
-                            id="apple-imac-27-dropdown"
-                            className="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
-                          >
-                            <ul
-                              className="py-1 text-sm text-gray-700 dark:text-gray-200"
-                              aria-labelledby="apple-imac-27-dropdown-button"
-                            >
-                              <li>
-                                <a
-                                  href="#"
-                                  className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                >
-                                  Show
-                                </a>
-                              </li>
-                              <li>
-                                <a
-                                  href="#"
-                                  className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                >
-                                  Edit
-                                </a>
-                              </li>
-                            </ul>
-                            <div className="py-1">
-                              <a
-                                href="#"
-                                className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                              >
-                                Delete
-                              </a>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
+                    corps.map((corp: CorpInterface, corpIndex: number) => (
+                      <SingleCorpCard key={corpIndex} corp={corp} />
                     ))}
                 </tbody>
               </table>

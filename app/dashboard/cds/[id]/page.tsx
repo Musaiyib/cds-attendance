@@ -1,52 +1,179 @@
 "use client";
-import { MouseEventHandler } from "react";
-import { getSingleCdsGroup, updateLegacyFee } from "@/actions/action";
+import {
+  getSingleCdsGroup,
+  updateLegacyFee,
+  updateWeeklyDues,
+} from "@/actions/action";
 import { CorpInterface, cdsGroupInterface } from "@/types";
 import useSWR from "swr";
 import { Spinner } from "@nextui-org/react";
 import toast from "react-hot-toast";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import { FiMinus, FiPlus } from "react-icons/fi";
+import { useState } from "react";
+import { calculateAttendance } from "@/app/lib/utils";
+
+interface corpAmount {
+  corpId: string;
+  amount: number;
+  legacy: boolean;
+}
 
 export default function SingleCdsGroup({
   params: { id },
 }: {
   params: { id: string };
 }) {
+  const [corpsAmt, setCorpsAmt] = useState<corpAmount[]>([]);
+  const [isWeeklyDuesLoading, setIsWeeklyDuesLoading] =
+    useState<boolean>(false);
+  const [isLegacyLoading, setIsLegacyLoading] = useState<boolean>(false);
   const { data, isLoading, error } = useSWR<
     cdsGroupInterface | { message: string; code: number }
   >("/dashboard/attendance/mark", () => getSingleCdsGroup(id));
-
-  const calculateAttendance = (attendance: Record<string, boolean>): number => {
-    const attendedWeeks = Object.values(attendance).filter(
-      (value) => value
-    ).length;
-    return (attendedWeeks / Object.keys(attendance).length) * 100;
-  };
 
   if (error) {
     toast.error(error.message);
   }
 
-  const handleLegacyFee = async (id: string) => {
+  const handleLegacyFee = async ({
+    id,
+    cdsId,
+    amount,
+  }: {
+    id: string;
+    cdsId: string;
+    amount: number;
+  }) => {
+    if (!id) return;
+    if (isLegacyLoading) return;
+
+    const index = corpsAmt.findIndex((item) => item.corpId === id);
+
+    if (index >= 0) {
+      if (corpsAmt[index].legacy === true) {
+        toast.error("Legacy fee is already marked paid");
+        return;
+      }
+    }
+
+    try {
+      setIsLegacyLoading(true);
+      const res = await updateLegacyFee(id, cdsId);
+
+      if (res.code === 200) {
+        toast.success(res.message);
+      } else if (res.code === 400) {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update legacy fee");
+    } finally {
+      setCorpsAmt((prevValue) => {
+        const existingCorp = prevValue.find((corp) => corp.corpId === id);
+
+        if (existingCorp) {
+          const updatedCorpsAmt = prevValue.map((corp) => {
+            if (corp.corpId === id) {
+              return {
+                ...corp,
+                legacy: true,
+              };
+            }
+            return corp;
+          });
+
+          return updatedCorpsAmt;
+        } else {
+          return [
+            ...prevValue,
+            {
+              corpId: id,
+              amount,
+              legacy: true,
+            },
+          ];
+        }
+      });
+      setIsLegacyLoading(false);
+    }
+  };
+
+  const handleWeeklyDues = async ({
+    id,
+    cdsId,
+    action,
+    amount,
+    legacy,
+  }: {
+    id: string;
+    cdsId: string;
+    action: number;
+    amount: number;
+    legacy: boolean;
+  }) => {
+    const index = corpsAmt.findIndex((item) => item.corpId === id);
+
+    if (isWeeklyDuesLoading) return;
     if (!id) return;
 
-    let isLoading = true;
+    if (index >= 0) {
+      if (
+        (action === 1 && corpsAmt[index].amount >= 200) ||
+        (action === 0 && corpsAmt[index].amount === 0)
+      ) {
+        toast.error("Weekly dues amount must be between ₦0 to ₦200");
+        return;
+      }
+    }
+    if (index === -1) {
+      if ((action === 1 && amount >= 200) || (action === 0 && amount === 0)) {
+        toast.error("Weekly dues amount must be between ₦0 to ₦200");
+        return;
+      }
+    }
 
-    const res = await updateLegacyFee(id).then((res) => {
-      isLoading = false;
-      return res;
-    });
+    try {
+      setIsWeeklyDuesLoading(true);
+      const res = await updateWeeklyDues(id, cdsId, action);
 
-    if (isLoading) {
-      toast.loading(
-        <>
-          <Spinner /> Loading...
-        </>
-      );
-    } else if (res.code === 200) {
-      toast.success(res.message);
-    } else if (res.code === 400) {
-      toast.error(res.message);
+      if (res.code === 200) {
+        toast.success(res.message);
+      } else if (res.code === 400) {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update legacy fee");
+    } finally {
+      setCorpsAmt((prevValue) => {
+        const existingCorp = prevValue.find((corp) => corp.corpId === id);
+
+        if (existingCorp) {
+          const updatedCorpsAmt = prevValue.map((corp) => {
+            if (corp.corpId === id) {
+              return {
+                ...corp,
+                amount: action === 1 ? corp.amount + 50 : corp.amount - 50,
+              };
+            }
+            return corp;
+          });
+
+          return updatedCorpsAmt;
+        } else {
+          return [
+            ...prevValue,
+            {
+              corpId: id,
+              amount: action === 1 ? amount + 50 : amount - 50,
+              legacy,
+            },
+          ];
+        }
+      });
+      setIsWeeklyDuesLoading(false);
     }
   };
 
@@ -290,6 +417,9 @@ export default function SingleCdsGroup({
                           Legacy Fee
                         </th>
                         <th scope="col" className="px-4 py-3">
+                          Weekly Dues
+                        </th>
+                        <th scope="col" className="px-4 py-3">
                           Actions
                         </th>
                       </tr>
@@ -317,9 +447,33 @@ export default function SingleCdsGroup({
                               <td className="px-4 py-3 ">
                                 <button
                                   type="button"
+                                  className={`${
+                                    corpsAmt &&
+                                    corpsAmt.length > 0 &&
+                                    corpsAmt.find(
+                                      (item) => item.corpId === corp.id
+                                    )
+                                      ? `${
+                                          corpsAmt.find(
+                                            (item) => item.corpId === corp.id
+                                          )!.legacy
+                                            ? "bg-green-700"
+                                            : "bg-red-700"
+                                        }`
+                                      : `${
+                                          corp.legacyFee
+                                            ? "bg-green-700"
+                                            : "bg-red-700"
+                                        }`
+                                  }
+                                  } text-center p-2 rounded-lg w-20`}
                                   onClick={() => {
                                     corp.legacyFee !== true
-                                      ? handleLegacyFee(corp.id)
+                                      ? handleLegacyFee({
+                                          id: corp.id,
+                                          cdsId: corp.cdsGroupId,
+                                          amount: corp.weeklyDues,
+                                        })
                                       : toast("Legacy fee is already paid", {
                                           icon: (
                                             <IoMdInformationCircleOutline className="scale-125 text-blue-600" />
@@ -327,9 +481,71 @@ export default function SingleCdsGroup({
                                         });
                                   }}
                                 >
-                                  {corp.legacyFee ? "Paid" : "Not paid"}
+                                  {corpsAmt &&
+                                  corpsAmt.length > 0 &&
+                                  corpsAmt.find(
+                                    (item) => item.corpId === corp.id
+                                  )
+                                    ? `${
+                                        corpsAmt.find(
+                                          (item) => item.corpId === corp.id
+                                        )!.legacy
+                                          ? "Paid"
+                                          : "Not paid"
+                                      }`
+                                    : `${corp.legacyFee ? "Paid" : "Not paid"}`}
                                 </button>
                               </td>
+                              <td className="px-4 py-3 justify-between flex-row">
+                                <div className="justify-around flex flex-row">
+                                  <button
+                                    type="button"
+                                    className="bg-red-700 rounded-lg flex items-center justify-center w-6 h-6"
+                                    disabled={isWeeklyDuesLoading}
+                                    onClick={() => {
+                                      handleWeeklyDues({
+                                        id: corp.id,
+                                        cdsId: corp.cdsGroupId,
+                                        action: 0,
+                                        amount: corp.weeklyDues,
+                                        legacy: corp.legacyFee,
+                                      });
+                                    }}
+                                  >
+                                    <FiMinus className="w-6 h-6" />
+                                  </button>
+                                  <p>
+                                    {corpsAmt &&
+                                    corpsAmt.length > 0 &&
+                                    corpsAmt.find(
+                                      (item) => item.corpId === corp.id
+                                    )
+                                      ? `₦${
+                                          corpsAmt.find(
+                                            (item) => item.corpId === corp.id
+                                          )!.amount
+                                        }`
+                                      : `₦${corp.weeklyDues}`}
+                                  </p>
+                                  <button
+                                    type="button"
+                                    className="bg-green-700 rounded-lg flex items-center justify-center w-6 h-6"
+                                    disabled={isWeeklyDuesLoading}
+                                    onClick={() => {
+                                      handleWeeklyDues({
+                                        id: corp.id,
+                                        cdsId: corp.cdsGroupId,
+                                        action: 1,
+                                        amount: corp.weeklyDues,
+                                        legacy: corp.legacyFee,
+                                      });
+                                    }}
+                                  >
+                                    <FiPlus className="w-6 h-6" />
+                                  </button>
+                                </div>
+                              </td>
+
                               <td className="px-4 py-3 flex items-center justify-end">
                                 <button
                                   id="apple-imac-27-dropdown-button"

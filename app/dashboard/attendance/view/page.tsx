@@ -7,6 +7,7 @@ import { fetchCorps } from "@/actions/action";
 import { CorpInterface } from "@/types";
 import useSWR from "swr";
 import { Spinner } from "@nextui-org/react";
+import { calculateAttendance } from "@/app/lib/utils";
 
 export default function ViewCorp() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -15,13 +16,6 @@ export default function ViewCorp() {
     "/dashboard/attendance/view",
     fetchCorps
   );
-
-  const calculateAttendance = (attendance: Record<string, boolean>): number => {
-    const attendedWeeks = Object.values(attendance).filter(
-      (value) => value
-    ).length;
-    return (attendedWeeks / Object.keys(attendance).length) * 100;
-  };
 
   const handleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -300,8 +294,8 @@ export default function ViewCorp() {
                         <td className="px-4 py-3">
                           <p
                             className={`${
-                              corp.legacyFee ? "bg-green-700" : "bg-red-700"
-                            } text-center p-2 rounded-lg w-20`}
+                              corp.legacyFee ? "text-green-700" : "text-red-700"
+                            } text-left p-2 rounded-lg w-20`}
                             onClick={() => {}}
                           >
                             {corp.legacyFee ? "Paid" : "Not paid"}
