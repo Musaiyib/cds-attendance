@@ -5,8 +5,10 @@ import { IoCheckmarkDone } from "react-icons/io5";
 import { TbHomeCheck } from "react-icons/tb";
 import { CiViewList } from "react-icons/ci";
 import { RxDashboard } from "react-icons/rx";
+import { signOut } from "@/auth";
+import { IoIosPersonAdd } from "react-icons/io";
 
-const SideBar = () => {
+const SideBar = async () => {
   return (
     <section className="min-w-max bg-gray-800 h-full hidden lg:flex">
       <div className="w-[280px] h-full flex flex-col items-left relative">
@@ -63,16 +65,29 @@ const SideBar = () => {
                 Add Corp Member
               </Link>
             </li>
-          </ul>
-          <ul className="absolute bottom-5 w-full pr-6">
-            <li className="h-10  flex items-center justify-left pl-4 my-1 rounded-r-3xl hover:bg-gray-700">
+            <li className="h-10  flex items-center justify-left pl-4 my-2 rounded-r-3xl hover:bg-gray-700">
               <Link
-                href="/logout"
+                href="/dashboard/staff"
                 className="flex flex-row items-center justify-left w-full h-full"
               >
-                <CgLogOut className="text-[20px] mr-2" /> Logout
+                <IoIosPersonAdd className="text-[20px] mr-2" />
+                Add Staff
               </Link>
             </li>
+          </ul>
+          <ul className="absolute bottom-5 w-full pr-6">
+            <form
+              action={async () => {
+                "use server";
+                await signOut();
+              }}
+              className="flex flex-row items-center justify-left w-full h-full justify-left pl-4 my-1 rounded-r-3xl hover:bg-gray-700"
+            >
+              <button className="flex grow w-full items-center justify-center gap-2 rounded-md p-3 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3">
+                <CgLogOut className="text-[20px] mr-2" />
+                <div className="hidden md:block">Sign Out</div>
+              </button>
+            </form>
           </ul>
         </div>
       </div>

@@ -1,9 +1,12 @@
 "use server"
 
+import { signIn } from "@/auth";
 import { prisma } from "@/prisma"
-import { CorpInterface, cdsGroupInterface } from "@/types";
+import { CorpInterface, cdsGroupInterface, userInterface } from "@/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { AuthError } from "next-auth";
 import { revalidatePath } from "next/cache";
+import { hash } from "bcrypt"
 
 export const addCorp = async (corpData: CorpInterface, id?: string): Promise<{ message: string, code: number }> => {
 
@@ -11,19 +14,48 @@ export const addCorp = async (corpData: CorpInterface, id?: string): Promise<{ m
 
     try {
         if (!id) {
-            await prisma.corp.create({
-                data: {
-                    fullName,
-                    stateCode,
-                    cdsGroupId,
-                    ppa,
-                    phone,
-                    state,
-                    course,
-                    university,
-                    attendance: { week1: false, week2: false, week3: false, week4: false }
+            const checkMembers = await prisma.cdsGroup.findUnique({
+                where: {
+                    id: cdsGroupId
                 },
-            });
+                include: {
+                    corps: {
+                        orderBy: {
+                            stateCode: 'asc'
+                        }
+                    }
+                }
+            })
+            if (checkMembers && checkMembers?.corps.length < 1) {
+                await prisma.corp.create({
+                    data: {
+                        fullName,
+                        stateCode,
+                        cdsGroupId,
+                        ppa,
+                        phone,
+                        state,
+                        role: "president",
+                        course,
+                        university,
+                        attendance: { week1: false, week2: false, week3: false, week4: false }
+                    },
+                });
+            } else {
+                await prisma.corp.create({
+                    data: {
+                        fullName,
+                        stateCode,
+                        cdsGroupId,
+                        ppa,
+                        phone,
+                        state,
+                        course,
+                        university,
+                        attendance: { week1: false, week2: false, week3: false, week4: false }
+                    },
+                });
+            }
             return { message: "Corp added successfully", code: 200 }
         } else {
             await prisma.corp.update({
@@ -137,7 +169,7 @@ export const getSingleCdsGroup = async (
                     orderBy: {
                         stateCode: 'asc'
                     }
-                }
+                },
             }
         })
         if (!cdsGroup) {
@@ -147,21 +179,24 @@ export const getSingleCdsGroup = async (
         }
     } catch (error) {
         console.log(error)
-        return { message: "Error while fetching cds groups", code: 400 }
+        return { message: "Error while fetching cds group", code: 400 }
     }
 }
 
 export const getCdsGroups = async (): Promise<cdsGroupInterface[] | string> => {
     try {
         const cdsGroups = await prisma.cdsGroup.findMany({
-            orderBy
-                : {
+            orderBy: {
                 name: 'asc'
             },
             include: {
                 corps: {
                     select: {
-                        id: true
+                        id: true,
+                        fullName: true,
+                        role: true,
+                        phone: true,
+                        stateCode: true
                     }
                 }
             }
@@ -195,24 +230,25 @@ export const updateAttendance = async (
 
 export const updateLegacyFee = async (corpId: string, cdsId: string): Promise<{ message: string, code: number }> => {
     try {
-        await prisma.corp.update({
-            where: {
-                id: corpId
-            },
-            data: {
-                legacyFee: true
-            }
-        })
-        await prisma.cdsGroup.update({
-            where: {
-                id: cdsId
-            },
-            data: {
-                legacyFee: {
-                    increment: 1
+        await prisma.$transaction([
+            prisma.corp.update({
+                where: {
+                    id: corpId
+                },
+                data: {
+                    legacyFee: true
                 }
-            }
-        })
+            }),
+            prisma.cdsGroup.update({
+                where: {
+                    id: cdsId
+                },
+                data: {
+                    legacyFee: {
+                        increment: 1
+                    }
+                }
+            })])
         return { message: "Legacy fee updated", code: 200 }
     } catch (error) {
         console.error(error)
@@ -285,7 +321,7 @@ export const deleteCdsGroup = async (cdsGroupId: string): Promise<{ message: str
             }
         })
         revalidatePath('/dashboard/cds')
-        return { message: "Cds group has been deleted successfully", code: 200 }
+        return { message: "Cds group has been  successfully", code: 200 }
     } catch (error: unknown) {
         if (error instanceof PrismaClientKnownRequestError && error.code === 'P2014') {
             // Handle the required relation violation error
@@ -325,4 +361,111 @@ export const deleteCorpMember = async (corpId: string): Promise<{ message: strin
     }
 }
 
-// export const updateCorpMember = async () => { }
+export const updateCDSPresident = async (oldPresidentId: string, newPresidentId: string, email: string, password: string): Promise<{ message: string, code: number }> => {
+    try {
+        await prisma.$transaction([
+            prisma.corp.update(
+                {
+                    where: {
+                        id: oldPresidentId
+                    },
+                    data: {
+                        role: "member",
+                        email: "",
+                        password: ""
+                    }
+                }
+            ),
+            prisma.corp.update(
+                {
+                    where: {
+                        id: newPresidentId
+                    },
+                    data: {
+                        role: "president",
+                        email,
+                        password,
+                    }
+                }
+            )])
+        return { message: "CDS group president has been updated successfully", code: 200 }
+    } catch (error: unknown) {
+
+        if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025' && error.meta?.cause === 'Record to delete does not exist.') {
+            return { message: 'Corp record does not exist', code: 400 }
+        }
+        else {
+            // Handle other known Prisma errors or log the error for investigation
+            console.error('Prisma error:', error);
+            return { message: "Failed to update CDS group president due to a Prisma error.", code: 400 };
+        }
+    }
+}
+
+// Login user
+
+export const getUser = async (email: string): Promise<userInterface | null> => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email: email,
+            },
+        });
+        return user || null; // Return null if user is not found
+    } catch (error) {
+        console.error('Failed to fetch user:', error);
+        throw new Error('Failed to fetch user.');
+    }
+}
+
+export async function authenticate(
+    prevState: string | undefined,
+    formData: FormData,
+) {
+    try {
+        await signIn('credentials', formData);
+    } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case 'CredentialsSignin':
+                    return 'Invalid credentials.';
+                default:
+                    return 'Something went wrong.';
+            }
+        }
+        throw error;
+    }
+}
+
+// seed users
+// (async () => {
+//     try {
+//         const usersCount = await prisma.user.count();
+//         const hashedPassword = await hash("12345678", 10)
+//         if (usersCount === 0) {
+//             const defaultUser = {
+//                 email: "admin@bolari.com",
+//                 name: "Admin User",
+//                 phone: "1234567890",
+//                 password: hashedPassword,
+//                 role: "admin",
+//             };
+//             const defaultUser2 = {
+//                 email: "staff@bolari.com",
+//                 name: "staff User",
+//                 phone: "1234567890",
+//                 password: hashedPassword,
+//             };
+
+//             await prisma.user.create({ data: defaultUser });
+//             await prisma.user.create({ data: defaultUser2 });
+
+//             console.log("User collection was empty. Seeded default user.");
+//         } else {
+//             console.log("User collection already has data. Skipping seeding.");
+//         }
+//     } catch (error) {
+//         console.error("Failed to seed users:", error);
+//         throw new Error("Failed to seed users.");
+//     }
+// })();

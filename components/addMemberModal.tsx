@@ -37,6 +37,7 @@ export const AddCorpMemberForm: React.FC<AddCorpMemberFormProps> = ({
     university: corpData?.university || "",
     course: corpData?.course || "",
     phone: corpData?.phone || "",
+    role: corpData?.role || "",
     attendance: corpData?.attendance || {
       week1: false,
       week2: false,
@@ -64,6 +65,7 @@ export const AddCorpMemberForm: React.FC<AddCorpMemberFormProps> = ({
       university: "",
       course: "",
       phone: "",
+      role: "",
       attendance: {
         week1: false,
         week2: false,

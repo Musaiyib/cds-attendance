@@ -12,6 +12,9 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { useState } from "react";
 import { calculateAttendance } from "@/app/lib/utils";
+import { LuRedoDot } from "react-icons/lu";
+import { ReassignPresidentModal } from "../components/reassignPresidentModal";
+import { TbStatusChange } from "react-icons/tb";
 
 interface corpAmount {
   corpId: string;
@@ -25,6 +28,8 @@ export default function SingleCdsGroup({
   params: { id: string };
 }) {
   const [corpsAmt, setCorpsAmt] = useState<corpAmount[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
   const [isWeeklyDuesLoading, setIsWeeklyDuesLoading] =
     useState<boolean>(false);
   const [isLegacyLoading, setIsLegacyLoading] = useState<boolean>(false);
@@ -177,9 +182,18 @@ export default function SingleCdsGroup({
     }
   };
 
+  const handleModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <section className="w-full h-full flex flex-row lg:px-2">
       <div className="flex-auto bg-gray-800 rounded-t-lg mt-2 light:bg-gray-50">
+        <ReassignPresidentModal
+          modalStatus={isModalOpen}
+          handleModal={handleModal}
+          cdsGroup={data as cdsGroupInterface}
+        />
         <div className="h-full w-full">
           <div className="bg-white dark:bg-gray-800 h-full relative shadow-md sm:rounded-lg overflow-hidden overflow-y-scroll text-start mx-2">
             {isLoading ? (
@@ -194,13 +208,13 @@ export default function SingleCdsGroup({
                   </h1>
                   <p className="justify-center align-center flex text-md">
                     Total corp members:
-                    <span className="ml-2 font-bold">
-                      {data && "corps" in data && data.corps ? (
-                        data.corps.length
-                      ) : (
-                        <Spinner />
-                      )}
-                    </span>
+                    {data && "corps" in data && data.corps ? (
+                      <span className="ml-2 font-bold">
+                        {data.corps.length}{" "}
+                      </span>
+                    ) : (
+                      <Spinner />
+                    )}
                   </p>
                 </div>
                 <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
@@ -236,6 +250,14 @@ export default function SingleCdsGroup({
                   </div>
                   <div className="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                     <div className="flex items-center space-x-3 w-full md:w-auto">
+                      <button
+                        className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 rounded-lg dark:bg-blue-600 dark:hover:bg-blue-700"
+                        type="button"
+                        onClick={() => setIsModalOpen(true)}
+                      >
+                        <TbStatusChange className="-ml-1 mr-1.5 w-5 h-5" />
+                        Reassign president
+                      </button>
                       <button
                         id="actionsDropdownButton"
                         data-dropdown-toggle="actionsDropdown"

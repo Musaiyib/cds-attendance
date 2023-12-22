@@ -16,6 +16,9 @@ export interface CorpInterface {
   university: string;
   course: string;
   phone: string;
+  role: string;
+  email?: string;
+  password?: string;
   attendance: { week1: boolean, week2: boolean, week3: boolean, week4: boolean }
   legacyFee: boolean; // Adjust the type to allow null values
   weeklyDues: number;
@@ -33,6 +36,19 @@ export interface cdsGroupInterface {
   updatedAt: Date;
 }
 
-type corpObject = {
+export interface userInterface {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  password: string;
+  role: string;
+}
+
+export type corpObject = {
   id: string
+  fullName: string;
+  role: string;
+  stateCode: string;
+  phone: string;
 }

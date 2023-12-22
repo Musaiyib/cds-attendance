@@ -18,6 +18,9 @@ model Corp {
   university String
   course     String
   phone      String
+  email      String     @default("")
+  password   String     @default("")
+  role       String     @default("member")
   attendance Attendance
   legacyFee  Boolean    @default(false)
   weeklyDues Int        @default(0)
@@ -37,6 +40,17 @@ model cdsGroup {
   corps      Corp[]   @relation("corpId")
 
   @@map("cdsGroups")
+}
+
+model user {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique
+  name     String
+  phone    String @unique
+  password String
+  role     String @default("staff")
+
+  @@map("users")
 }
 
 type Attendance {

@@ -13,6 +13,7 @@ import {
 import { deleteCdsGroup } from "@/actions/action";
 import toast from "react-hot-toast";
 import { AddCdsGroupForm } from "@/components/addCdsGroupModal";
+import { FindCDSPresident } from "@/app/lib/utils";
 
 interface CdsGroupCardProps {
   cdsGroup: cdsGroupInterface;
@@ -71,15 +72,15 @@ const CdsGroupCard: React.FC<CdsGroupCardProps> = ({ cdsGroup }) => {
     setIsModalOpen(false);
   };
 
+  const cdsPresident = FindCDSPresident(cdsGroup);
+
   return (
     <>
-      {isModalOpen && (
-        <AddCdsGroupForm
-          cdsGroup={cdsGroup}
-          modalStatus={isModalOpen}
-          handleModal={handleModal}
-        />
-      )}
+      <AddCdsGroupForm
+        cdsGroup={cdsGroup}
+        modalStatus={isModalOpen}
+        handleModal={handleModal}
+      />
       <div className="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 hover:scale-[1.02]">
         <div className="flex relative justify-between items-center mb-5 text-gray-500">
           <span className="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
@@ -153,12 +154,21 @@ const CdsGroupCard: React.FC<CdsGroupCardProps> = ({ cdsGroup }) => {
             </p>
           </div>
           <div className="w-full">
-            <div className="flex flex-col items-left">
-              <p className="text-sm">Musaiyib Yakubu Usman</p>
-              <p className="flex justify-center align-center text-sm p-[1px] pb-1 bg-blue-500 rounded-lg max-w-max px-2 mt-1">
-                President
+            {cdsPresident ? (
+              <div className="flex flex-row justify-between items-left">
+                <div className="">
+                  <p className="text-sm">{cdsPresident?.fullName}</p>
+                  <p className="text-sm">{cdsPresident?.phone}</p>
+                </div>
+                <p className="flex justify-center items-center text-sm p-[1px] pb-1 bg-blue-500 rounded-lg max-w-max px-2 mt-1">
+                  President
+                </p>
+              </div>
+            ) : (
+              <p className="text-red-700">
+                No corp member added to this cds group yet
               </p>
-            </div>
+            )}
           </div>
         </Link>
       </div>
