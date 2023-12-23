@@ -18,7 +18,7 @@ const SideBar = async () => {
           <div className="w-16 h-16 rounded-full bg-slate-600 mb-4 mt-4"></div>
           <h3>{user.name}</h3>
           <p>{user.email}</p>
-          <p className="capitalize py-2 px-3 mt-5 rounded-md bg-gray-500">
+          <p className="capitalize py-1 px-2 mt-3 rounded-md bg-gray-500">
             {user.role || "Admin"}
           </p>
         </div>

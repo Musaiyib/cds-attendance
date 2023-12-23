@@ -12,7 +12,7 @@ const SignOutBtn = () => {
       >
         <button className="flex grow w-full items-center justify-center rounded-md text-sm font-medium md:flex-none md:justify-center md:p-2 md:px-3">
           <CgLogOut className="text-[20px] mr-2 font-bold" />
-          <div className="hidden md:block font-bold">Sign Out</div>
+          <div className="block font-bold">Log Out</div>
         </button>
       </form>
     </ul>
