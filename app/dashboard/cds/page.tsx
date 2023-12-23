@@ -1,7 +1,7 @@
 "use client";
 import { LuPlus } from "react-icons/lu";
 import { AddCdsGroupForm } from "@/components/addCdsGroupModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getCdsGroups } from "@/actions/action";
 import useSWR from "swr";
 import { Spinner } from "@nextui-org/react";

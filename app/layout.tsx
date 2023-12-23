@@ -5,7 +5,6 @@ import { fontSans } from "@/config/fonts";
 import { Providers } from "./providers";
 import clsx from "clsx";
 import { Toaster } from "react-hot-toast";
-import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: {
@@ -27,7 +26,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;

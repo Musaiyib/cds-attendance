@@ -1,6 +1,6 @@
 "use server"
 
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { prisma } from "@/prisma"
 import { CorpInterface, cdsGroupInterface, userInterface } from "@/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
@@ -435,6 +435,11 @@ export async function authenticate(
         }
         throw error;
     }
+}
+
+export const handleLogOut = async () => {
+    await signOut();
+
 }
 
 // seed users

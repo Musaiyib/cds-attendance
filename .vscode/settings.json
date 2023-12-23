@@ -1,4 +1,11 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["clsx", "Dismissable", "Fullname", "nysc"]
+  "cSpell.words": [
+    "clsx",
+    "Dismissable",
+    "Fullname",
+    "NEXTAUTH",
+    "nysc",
+    "Signout"
+  ]
 }

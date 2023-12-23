@@ -66,7 +66,7 @@ export const ReassignPresidentModal: React.FC<ChangeCDSPresident> = ({
     const corps =
       cdsGroup && searchCorp(cdsGroup.corps as CorpInterface[], searchTerm);
     setSearchResult(corps);
-  }, [searchTerm]);
+  }, [searchTerm, cdsGroup]);
   useEffect(() => {
     modalStatus ? onOpen() : handleCloseModal();
   }, [modalStatus, handleCloseModal, onOpen]);
@@ -74,7 +74,7 @@ export const ReassignPresidentModal: React.FC<ChangeCDSPresident> = ({
     const cdsPresident =
       cdsGroup && FindCDSPresident(cdsGroup.corps as CorpInterface[]);
     setSelectedCorp(cdsPresident);
-  }, [onOpen]);
+  }, [onOpen, cdsGroup]);
 
   const handleChangePresident = async () => {
     console.log(selectedCorp);

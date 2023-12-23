@@ -1,8 +1,8 @@
 "use client";
 import { useFormState, useFormStatus } from "react-dom";
-import { TbFlagExclamation } from "react-icons/tb";
 import LoginBtn from "./loginBtn";
 import { authenticate } from "@/actions/action";
+import { BsPatchExclamation } from "react-icons/bs";
 
 const LoginForm = () => {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
@@ -19,6 +19,7 @@ const LoginForm = () => {
           type="email"
           name="email"
           id="email"
+          value="admin@bolari.com"
           className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="name@company.com"
           required
@@ -35,6 +36,7 @@ const LoginForm = () => {
           type="password"
           name="password"
           id="password"
+          value="12345678"
           placeholder="••••••••"
           className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           required
@@ -48,7 +50,7 @@ const LoginForm = () => {
       >
         {errorMessage && (
           <>
-            <TbFlagExclamation className="h-5 w-5 text-red-500" />
+            <BsPatchExclamation className="h-5 w-5 text-red-500" />
             <p className="text-sm text-red-500">{errorMessage}</p>
           </>
         )}
