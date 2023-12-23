@@ -24,7 +24,7 @@ export default function MarkAttendance() {
       setCorps(fetchedCorps);
     }
     if (corps) searchCorp(corps, searchTerm);
-  }, [fetchedCorps, searchTerm]);
+  }, [fetchedCorps, searchTerm, corps]);
 
   const handleUpdateAttendance = async (
     corpId: string,
