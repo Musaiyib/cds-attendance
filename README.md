@@ -2,6 +2,14 @@
 
 This is a template for creating applications using Next.js 13 (app directory) and NextUI (v2).
 
+
+## How to Use
+- [Visit Website](https://cds-attendance.vercel.app)
+- It just a simple admin dashboard design to manage corps weekly dues, legacy dues and weekly attendance
+- Admin can add cds group and president and can also mark the cds attendace and all the fees and dues
+- the projects is not yet done
+
+
 ## Technologies Used
 
 - [Next.js 13](https://nextjs.org/docs/getting-started)
@@ -12,7 +20,6 @@ This is a template for creating applications using Next.js 13 (app directory) an
 - [Framer Motion](https://www.framer.com/motion/)
 - [next-themes](https://github.com/pacocoursey/next-themes)
 
-## How to Use
 
 
 ### Use the template with create-next-app
